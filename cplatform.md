@@ -1,6 +1,6 @@
 # Microsoft Exchange Online Source Connector for Confluent Platform
 
-This Kafka *source* connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
+This Kafka _source_ connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
 Kafka, by leveraging the Microsoft Graph API to fetch emails and publish them to Kafka topics. This
 enables real-time email processing, making it an essential component for organizations looking to
 streamline their email data workflows.
@@ -81,7 +81,7 @@ following [Confluent CLI](https://docs.confluent.io/confluent-cli/current/index.
 confluent local services start
 ```
 
-**Important**: Do not use the Confluent CLI in production environments. **TBD**
+**Important**: Do not use the Confluent CLI in production environments.
 
 ### Property-based Example
 
@@ -110,7 +110,7 @@ Connect [source-related](https://kafka.apache.org/documentation.html#sourceconne
 configuration options, this connector defines the following configuration properties.
 
 | Property                                | Required | Default  | Description                                                                                                                                                                                                                       |
-|-----------------------------------------|----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `kafka.topic`                           | **Yes**  |          | Kafka topic to publish the emails to.                                                                                                                                                                                             |
 | `tasks.max`                             | **Yes**  | 1        | Maximum number of tasks to use for this connector. To achieve maximum throughput, set this to the same number as the mailboxes configured to monitor.                                                                             |
 | `email.mailboxes`                       | **Yes**  |          | List of mailboxes to monitor, separated by comma. Example: `a@sample.com,b@sample.com`                                                                                                                                            |
@@ -215,25 +215,13 @@ Connect: https://www.confluent.io/en-gb/blog/kafka-connect-deep-dive-error-handl
 
 ## Logging and tracking
 
-ExchangeOnlineEmailSourceConnector adds ```source.poll.id``` to MDC context for each poll and the
+ExchangeOnlineEmailSourceConnector adds `source.poll.id` to MDC context for each poll and the
 same id is also populated into the headers of each kafka message published in that poll. The id can
 be used to correlate the log messages to published kafka messages.
 
 Please refer to [Logging](https://kafka.apache.org/documentation.html#connect_logging) on how to
-enable context printing in the logs (look for ```connector.context```).
+enable context printing in the logs (look for `connector.context`).
 
 ## License
 
-**TBD**
-_You can use this connector for a 30-day trial period without a license key_.
-
-After 30 days, you must purchase a connector subscription, which
-includes [Confluent enterprise license](https://www.confluent.io/subscription/) keys for subscribers
-and enterprise-level support for Confluent Platform and your connectors. If you are a subscriber,
-you can contact Confluent Support at [support@confluent.io](mailto:support@confluent.io) for more
-information.
-
-For license properties,
-see [Confluent Platform license](configuration_options.html#jira-source-connector-license-config).
-For information about the license topic,
-see [License topic configuration](configuration_options.html#jira-source-license-topic-configuration).
+The connector is licensed under the [Apache-2.0 License](./LICENSE).

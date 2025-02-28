@@ -1,6 +1,6 @@
 # Kafka Connector for Microsoft Exchange Online
 
-This Kafka *source* connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
+This Kafka _source_ connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
 Kafka, by leveraging the Microsoft Graph API to fetch emails and publish them to Kafka topics. This
 enables real-time email processing, making it an essential component for organizations looking to
 streamline their email data workflows.
@@ -103,25 +103,25 @@ At the **Add Microsoft Exchange Online Source Connector** screen, complete the f
 Enter the following configuration details:
 
 - Email Configuration:
-    - **Mailboxes to poll**: Enter the list of mailboxes to monitor, separated by commas. Example:
-      `abc@mail.com,xyz@mail.com`.
-    - **Preferred content type** for email: `text` or `html`.
-    - **Where to start** reading emails from for new mailboxes: `earliest` or `latest`.
+  - **Mailboxes to poll**: Enter the list of mailboxes to monitor, separated by commas. Example:
+    `abc@mail.com,xyz@mail.com`.
+  - **Preferred content type** for email: `text` or `html`.
+  - **Where to start** reading emails from for new mailboxes: `earliest` or `latest`.
 - Exchange Online Configuration:
-    - **Tenant ID**: Azure App's Tenant ID (Instructions for setting up the app can be found in
-      Azure-AD-App-Setup-Instructions.docx.
-    - **Client ID**: Azure App's Client ID.
-    - **Client Secret**: Azure App's secret.
+  - **Tenant ID**: Azure App's Tenant ID (Instructions for setting up the app can be found in
+    Azure-AD-App-Setup-Instructions.docx.
+  - **Client ID**: Azure App's Client ID.
+  - **Client Secret**: Azure App's secret.
 - Email Repository Configuration:
-    - **Enable Email Repository**: Enable saving of raw emails (in mime format, .eml) to S3.
-    - **S3 Region**: AWS region of the S3 bucket.
-    - **S3 Bucket**: The S3 bucket to use to save the raw emails.
-    - **S3 Access Key ID**: AWS Access Key to access S3.
-    - **S3 Secret Access Key**: AWS Access Key Secret.
+  - **Enable Email Repository**: Enable saving of raw emails (in mime format, .eml) to S3.
+  - **S3 Region**: AWS region of the S3 bucket.
+  - **S3 Bucket**: The S3 bucket to use to save the raw emails.
+  - **S3 Access Key ID**: AWS Access Key to access S3.
+  - **S3 Secret Access Key**: AWS Access Key Secret.
 - General Configuration:
-    - **Topic Name**: Enter the topic name to which the emails to be written.
-    - **Tasks max**: The number of tasks to run. To achieve maximum throughput, set this to the same
-      number as the mailboxes configured to monitor.
+  - **Topic Name**: Enter the topic name to which the emails to be written.
+  - **Tasks max**: The number of tasks to run. To achieve maximum throughput, set this to the same
+    number as the mailboxes configured to monitor.
 
 **Review and Launch**:
 
@@ -135,14 +135,14 @@ For more information and examples to use with the Confluent Cloud API for Connec
 the [Confluent Cloud API for Connect Usage Examples](https://docs.confluent.io/cloud/current/connectors/connect-api-section.html#ccloud-connect-api)
 section.
 
-### Configuration Properties **TBD**
+### Configuration Properties
 
 In addition to the common Kafka
 Connect [source-related](https://kafka.apache.org/documentation.html#sourceconnectconfigs)
 configuration options, this connector defines the following configuration properties.
 
 | Property                                | Required | Default  | Description                                                                                                                                                                                                                       |
-|-----------------------------------------|----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `kafka.topic`                           | **Yes**  |          | Kafka topic to publish the emails to.                                                                                                                                                                                             |
 | `tasks.max`                             | **Yes**  | 1        | Maximum number of tasks to use for this connector. To achieve maximum throughput, set this to the same number as the mailboxes configured to monitor.                                                                             |
 | `email.mailboxes`                       | **Yes**  |          | List of mailboxes to monitor, separated by comma. Example: `a@sample.com,b@sample.com`                                                                                                                                            |
@@ -165,15 +165,9 @@ Connect: https://www.confluent.io/en-gb/blog/kafka-connect-deep-dive-error-handl
 
 ## Logging and tracking
 
-ExchangeOnlineEmailSourceConnector adds ```source.poll.id``` to MDC context for each poll and the
+ExchangeOnlineEmailSourceConnector adds `source.poll.id` to MDC context for each poll and the
 same id is also populated into the headers of each kafka message published in that poll. The id can
 be used to correlate the log messages to published kafka messages.
 
 Please refer to [Logging](https://kafka.apache.org/documentation.html#connect_logging) on how to
-enable context printing in the logs (look for ```connector.context```).
-
-## Next Steps
-
-For an example showing fully-managed Confluent Cloud connectors in action with Confluent Cloud, see
-the [TBD](TBD).
-
+enable context printing in the logs (look for `connector.context`).
