@@ -1,61 +1,29 @@
-# Kafka Connector for Microsoft Exchange Online
+# Microsoft Exchange Online Source Connector for Confluent Platform
 
-This Kafka _source_ connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
+This Kafka *source* connector seamlessly integrates Microsoft Exchange Online (M365) mailboxes with
 Kafka, by leveraging the Microsoft Graph API to fetch emails and publish them to Kafka topics. This
 enables real-time email processing, making it an essential component for organizations looking to
 streamline their email data workflows.
-
-## Contents
-
-- [Overview](#overview)
-- [Features](#features)
-  - [At least once delivery](#at-least-once-delivery)
-  - [Supports multiple tasks](#supports-multiple-tasks)
-  - [Microsoft Exchange Online resources](#microsoft-exchange-online-resources)
-- [Limitations](#limitations)
-- [Use cases](#use-cases)
-  - [Email Semantic Search](./use-case-semantic-search.md)
-  - [Email Archiving](./use-case-semantic-search.md)
-  - [Knowledge Graph](./use-case-semantic-search.md)
-  - [Customer Engagement Metrics](./use-case-semantic-search.md)
-- [Prerequisite](#prerequisite)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Examples](#examples)
-  - [Minimal Configuration](#minimal-configuration)
-  - [Multiple Mailboxes](#multiple-mailboxes)
-  - [JSON/AVRO Encoding](#json-encoding)
-- [Error handling](#error-handling)
-- [Logging and tracking](#logging-and-tracking)
-- [License](#license)
-- [Support](#support)
-
-## Overview
-
-Exchange Online Connector is a source connector capturing emails from Microsoft Exchange Online and publishing them to Kafka topics. The connector can be used to build real-time email processing applications like email archiving, semantic search and knowledge graphs.
-
-The connector uses Microsoft Graph API to fetch emails from the configured mailboxes. The connector can scale up horizontally by running multiple tasks to fetch emails from multiple mailboxes, one task per mailbox. The connector can optionally be configured to save the raw emails to S3 in mime format.
-
-![Exchange Online Source Connector Overview](./resources/exchangeonline-source-connector.png)
 
 ## Features
 
 The Microsoft Exchange Online Source connector offers the following features:
 
 - [At least once delivery](#at-least-once-delivery)
-- [Supports multiple tasks](#supports-multiple-tasks)
+- [Supports one task](#supports-one-task)
 - [Microsoft Exchange Online Resources](#microsoft-exchange-online-resources)
 
-#### At least once delivery
+### At least once delivery
 
 This connector guarantees that emails are delivered to the Kafka topic at least once. If the
 connector restarts, there may be some duplicate records in the Kafka topic.
 
-#### Supports multiple tasks
+### Supports one task
 
-The connector supports running one or more tasks. More tasks may improve performance. One mailbox is covered by one task only.
+The Microsoft Exchange Online Source connector supports running one task, one mailbox is covered by
+one task.
 
-#### Microsoft Exchange Online resources
+### Microsoft Exchange Online resources
 
 The connector supports fetching the following resources:
 
@@ -64,52 +32,85 @@ The connector supports fetching the following resources:
 
 ## Limitations
 
-- Only Emails are supported from Exchange Online.
+- Supports only one task in community edition.
 - Email body is limited to 1MB.
 
-## Use cases
+## Install the Microsoft Exchange Online Source Connector
 
-Following are some of the use cases where this connector can be useful:
+You can install this connector by using
+the [Confluent Connect Plugin Install](https://docs.confluent.io/platform/current/connect/userguide.html)
+command or by manually downloading the ZIP file.
 
-- [Email Semantic Search](./use-case-semantic-search.md)
-- [Email Archiving](./use-case-semantic-search.md)
-- [Knowledge Graph](./use-case-semantic-search.md)
-- [Customer Engagement Metrics](./use-case-semantic-search.md)
+### Prerequisites
 
-## Prerequisite
+- The connector must be installed on every machine where Connect will run.
+- Kafka Broker: Confluent Platform 3.3.0 or later.
+- Connect: Confluent Platform 4.1.0 or later.
+- Java 1.8.
+- You must have an Azure App Registration with access to Microsoft Graph API.
+- An installation of the latest connector version. Run the following command:
 
-- Confluent Platform or Apache Kafka with connect
-- Azure AD Application with access to Exchange online.
+```bash
+confluent connect plugin install *TBD* <inoxis/ExchangeOnlineSourceConnector:latest>
+```
 
-  Here are the [instructions](./azure-ad-app-setup.md) to setup Azure AD App if you have not got one already.
+To install a specific version:
 
-## Installation
+```bash
+confluent connect plugin install *TBD* <inoxis/ExchangeOnlineSourceConnector:1.2.4>
+```
 
-The connector is distributed in two versions:
+### Install the Connector Manually
 
-- Confluent Platform® and Confluent Cloud®.
+**TBD**
+[Download and extract the ZIP file](https://www.confluent.io/hub/inoxis/ExchangeOnlineSourceConnector)
+for your connector and follow
+the [manual connector installation instructions](https://docs.confluent.io/platform/current/connect/userguide.html#connect-installing-plugins).
 
-  This package can be deployed to Confluent Platform as a self-managed connector, and to Confluent Cloud as a custom connector.
+## Quick Start
 
-  The package is available for download from [Confluent Connector Hub](https://www.confluent.io/hub/TBD). Here are the installation instructions:
+In this quick start, you will configure the Microsoft Exchange Online Source connector to copy
+emails from the Exchange mailbox to the Kafka topic.
 
-  - [Confluent Platform](./cplatform.md)
-  - [Confluent Cloud](./ccloud.md)
+### Start Confluent
 
-- Apache Kafka
+Start the Confluent services using the
+following [Confluent CLI](https://docs.confluent.io/confluent-cli/current/index.html) command:
 
-  This package is available for platforms built on the open-source software (OSS) Apache Kafka®, including Amazon MSK®.
+```bash
+confluent local services start
+```
 
-  For standalone Kafka Connect installations, download the self-contained JAR file and copy it into the plugins directory for each of your Kafka Connect cluster members.
+**Important**: Do not use the Confluent CLI in production environments. **TBD**
 
-## Configuration
+### Property-based Example
+
+Configure the `exchangeonline-source-quickstart.properties` file with the following properties:
+
+```properties
+name=ExchangeOnlineSourceConnector
+tasks.max=1
+connector.class=io.inoxis.comms.kafkaconnect.exchangeonline.ExchangeOnlineEmailSourceConnector
+exchangeonline.tenant.id=XXXXXXXX
+exchangeonline.client.id=XXXXXXXX
+exchangeonline.client.secret=XXXXXXXX
+kafka.topic=m365-emails
+```
+
+Next, load the Source connector:
+
+```bash
+./bin/confluent local services connect connector load ExchangeOnlineSourceConnector --config ./etc/kafka-connect-jira/exchangeonline-source-quickstart.properties
+```
+
+### Configuration Properties
 
 In addition to the common Kafka
 Connect [source-related](https://kafka.apache.org/documentation.html#sourceconnectconfigs)
 configuration options, this connector defines the following configuration properties.
 
 | Property                                | Required | Default  | Description                                                                                                                                                                                                                       |
-| --------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------------------------|----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `kafka.topic`                           | **Yes**  |          | Kafka topic to publish the emails to.                                                                                                                                                                                             |
 | `tasks.max`                             | **Yes**  | 1        | Maximum number of tasks to use for this connector. To achieve maximum throughput, set this to the same number as the mailboxes configured to monitor.                                                                             |
 | `email.mailboxes`                       | **Yes**  |          | List of mailboxes to monitor, separated by comma. Example: `a@sample.com,b@sample.com`                                                                                                                                            |
@@ -124,18 +125,20 @@ configuration options, this connector defines the following configuration proper
 | `email.repository.s3.secret.access.key` | No       |          | AWS Access Key Secret.                                                                                                                                                                                                            |
 | `email.repository.s3.endpoint.url`      | No       |          | An optional AWS endpoint URL, useful for testing with Localstack.                                                                                                                                                                 |
 
-## Examples
+### REST-based Examples
 
-#### Minimal Configuration
+Use the following configuration when using API to start the connector:
+
+#### With Default Configuration
 
 The following minimal configuration configures the connector with default values, publishing emails
 to topic
 `"m365-emails"`, and saving raw emails to S3.
 
-```json5
-{
-  name: "ExchangeOnlineSourceConnector",
-  config: {
+```bash
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+  "name": "ExchangeOnlineSourceConnector",
+  "config": {
     "connector.class": "io.inoxis.comms.kafkaconnect.exchangeonline.ExchangeOnlineEmailSourceConnector",
     "tasks.max": 1,
     "kafka.topic": "m365-emails",
@@ -148,17 +151,17 @@ to topic
     "email.repository.s3.region": "us-east-1",
     "email.repository.s3.bucket": "my-emails-bucket",
     "email.repository.s3.access.key": "XXXXXXXX",
-    "email.repository.s3.secret.access.key": "XXXXXXXX",
-  },
-}
+    "email.repository.s3.secret.access.key": "XXXXXXXX"
+  }
+}'
 ```
 
-#### Multiple Mailboxes
+#### With Default Configuration and Multiple Mailboxes
 
-```json5
-{
-  name: "ExchangeOnlineSourceConnector",
-  config: {
+```bash
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+  "name": "ExchangeOnlineSourceConnector",
+  "config": {
     "connector.class": "io.inoxis.comms.kafkaconnect.exchangeonline.ExchangeOnlineEmailSourceConnector",
     "tasks.max": 2,
     "kafka.topic": "m365-emails",
@@ -171,19 +174,19 @@ to topic
     "email.repository.s3.region": "us-east-1",
     "email.repository.s3.bucket": "my-emails-bucket",
     "email.repository.s3.access.key": "XXXXXXXX",
-    "email.repository.s3.secret.access.key": "XXXXXXXX",
-  },
-}
+    "email.repository.s3.secret.access.key": "XXXXXXXX"
+  }
+}'
 ```
 
 #### JSON Encoding
 
 Below is an example of a JSON Encoding, in the same way Avro Encoding can also be configured.
 
-```json5
-{
-  name: "ExchangeOnlineSourceConnector",
-  config: {
+```bash
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+  "name": "ExchangeOnlineSourceConnector",
+  "config": {
     "connector.class": "io.inoxis.comms.kafkaconnect.exchangeonline.ExchangeOnlineEmailSourceConnector",
     "tasks.max": 2,
     "kafka.topic": "m365-emails",
@@ -199,9 +202,9 @@ Below is an example of a JSON Encoding, in the same way Avro Encoding can also b
     "email.repository.s3.secret.access.key": "XXXXXXXX",
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": false,
-  },
-}
+    "value.converter.schemas.enable": false
+  }
+}'
 ```
 
 ## Error handling
@@ -212,17 +215,25 @@ Connect: https://www.confluent.io/en-gb/blog/kafka-connect-deep-dive-error-handl
 
 ## Logging and tracking
 
-ExchangeOnlineEmailSourceConnector adds `source.poll.id` to MDC context for each poll and the
+ExchangeOnlineEmailSourceConnector adds ```source.poll.id``` to MDC context for each poll and the
 same id is also populated into the headers of each kafka message published in that poll. The id can
 be used to correlate the log messages to published kafka messages.
 
 Please refer to [Logging](https://kafka.apache.org/documentation.html#connect_logging) on how to
-enable context printing in the logs (look for `connector.context`).
+enable context printing in the logs (look for ```connector.context```).
 
 ## License
 
-The connector is licensed under the [Apache-2.0 License](./LICENSE).
+**TBD**
+_You can use this connector for a 30-day trial period without a license key_.
 
-## Support
+After 30 days, you must purchase a connector subscription, which
+includes [Confluent enterprise license](https://www.confluent.io/subscription/) keys for subscribers
+and enterprise-level support for Confluent Platform and your connectors. If you are a subscriber,
+you can contact Confluent Support at [support@confluent.io](mailto:support@confluent.io) for more
+information.
 
-Please email support@inoxis.io for any queries.
+For license properties,
+see [Confluent Platform license](configuration_options.html#jira-source-connector-license-config).
+For information about the license topic,
+see [License topic configuration](configuration_options.html#jira-source-license-topic-configuration).
