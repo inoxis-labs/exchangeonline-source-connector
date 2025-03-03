@@ -91,7 +91,7 @@ The connector is distributed in two versions:
 
   This package can be deployed to Confluent Platform as a self-managed connector, and to Confluent Cloud as a custom connector.
 
-  The package is available for download from [Confluent Connector Hub](https://www.confluent.io/hub/TBD). Here are the installation instructions:
+  The package is available for download from [Confluent Connector Hub](https://www.confluent.io/hub/TBD) or [releases](https://github.com/inoxis-labs/exchangeonline-source-connector/releases). Here are the installation instructions:
 
   - [Confluent Platform](./cplatform.md)
   - [Confluent Cloud](./ccloud.md)
@@ -100,7 +100,7 @@ The connector is distributed in two versions:
 
   This package is available for platforms built on the open-source software (OSS) Apache Kafka®, including Amazon MSK®.
 
-  For standalone Kafka Connect installations, download the self-contained JAR file and copy it into the plugins directory for each of your Kafka Connect cluster members.
+  For standalone Kafka Connect installations, [download](https://github.com/inoxis-labs/exchangeonline-source-connector/releases) the self-contained JAR file and copy it into the plugins directory for each of your Kafka Connect cluster members.
 
 ## Configuration
 
